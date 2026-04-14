@@ -40,17 +40,17 @@ export function Scene() {
 
   return (
     <>
-      {/* Reduced ambient — dark theme: soft grey fill, no harsh white */}
-      <ambientLight intensity={0.35} color="#888888" />
+      {/* Balanced lighting for dark theme — specs visible against dark background */}
+      <ambientLight intensity={0.6} color="#BBBBBB" />
       <directionalLight
         position={[3, 4, 5]}
-        intensity={0.9}
-        color="#AAAAAA"
+        intensity={1.3}
+        color="#E8E8E8"
         castShadow
         shadow-mapSize={[512, 512]}
       />
-      <directionalLight position={[-2, 2, 3]} intensity={0.35} color="#666666" />
-      <directionalLight position={[0, -1, 2]} intensity={0.2} color="#888888" />
+      <directionalLight position={[-2, 2, 3]} intensity={0.5} color="#AAAAAA" />
+      <directionalLight position={[0, -1, 2]} intensity={0.3} color="#999999" />
       <group ref={groupRef} position={[0, 0, 0]}>
         <GlassesModel />
       </group>
