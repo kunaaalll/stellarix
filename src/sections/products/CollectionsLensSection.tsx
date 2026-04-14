@@ -3,6 +3,7 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { Container } from "@/components/layout";
+import { useTheme } from "@/context/ThemeContext";
 
 interface LensFeature {
   label: string;
@@ -15,6 +16,7 @@ interface LensCard {
   tagline: string;
   tier: string;
   accentBar: string;
+  accentBarLight: string;
   image: string;
   features: LensFeature[];
 }
@@ -26,6 +28,7 @@ const LENS_SERIES: LensCard[] = [
     tier: "01 — Essential",
     tagline: "The essential foundation of precision optics.",
     accentBar: "#333333",
+    accentBarLight: "#C0C0C0",
     image: "/lenses/elaris.png",
     features: [
       { label: "Super Hydrophobic & Oleophobic Shield" },
@@ -39,6 +42,7 @@ const LENS_SERIES: LensCard[] = [
     tier: "02 — Clarity",
     tagline: "Ultra-transparent optics with camera-ready clarity.",
     accentBar: "#888888",
+    accentBarLight: "#888888",
     image: "/lenses/elaris-clear.png",
     features: [
       { label: "Super Hydrophobic & Oleophobic Shield" },
@@ -57,6 +61,7 @@ const LENS_SERIES: LensCard[] = [
     tier: "03 — Performance",
     tagline: "Engineered for confident night-time driving.",
     accentBar: "#444444",
+    accentBarLight: "#BBBBBB",
     image: "/lenses/elaris-drive.png",
     features: [
       { label: "Super Hydrophobic & Oleophobic Shield" },
@@ -80,6 +85,7 @@ const LENS_SERIES: LensCard[] = [
     tier: "04 — Premium",
     tagline: "Maximum durability meets optical excellence.",
     accentBar: "#E8E8E8",
+    accentBarLight: "#1A1A1A",
     image: "/lenses/elaris-fusion.png",
     features: [
       { label: "Super Hydrophobic & Oleophobic Shield" },
@@ -105,18 +111,31 @@ function FlipCard({ lens, isActive, wiggleDelay }: { lens: LensCard; isActive: b
   const [flipped, setFlipped] = useState(false);
   const [wiggling, setWiggling] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (hasInteracted) return;
-    const timeout = setTimeout(() => {
+    if (!isActive) return;
+
+    const timeout = window.setTimeout(() => {
+      setWiggling(true);
+    }, 120);
+
+    return () => window.clearTimeout(timeout);
+  }, [isActive, hasInteracted]);
+
+  useEffect(() => {
+    if (hasInteracted) return;
+    const timeout = window.setTimeout(() => {
       setWiggling(true);
     }, wiggleDelay);
-    return () => clearTimeout(timeout);
+    return () => window.clearTimeout(timeout);
   }, [wiggleDelay, hasInteracted]);
 
   return (
     <div
-      className="min-w-[290px] w-[80vw] max-w-[380px] flex-shrink-0 snap-start cursor-pointer select-none"
+      className="min-w-[85vw] w-[85vw] max-w-[380px] flex-shrink-0 snap-start cursor-pointer select-none sm:min-w-[290px] sm:w-[80vw]"
       style={{ perspective: "1200px", height: CARD_HEIGHT }}
       onClick={() => { setFlipped((f) => !f); setHasInteracted(true); setWiggling(false); }}
       role="button"
@@ -144,26 +163,40 @@ function FlipCard({ lens, isActive, wiggleDelay }: { lens: LensCard; isActive: b
             borderRadius: 12,
             borderWidth: "0.5px",
             borderStyle: "solid",
-            borderColor: isActive ? "#E8E8E8" : "#2A2A2A",
-            background: "#111111",
+            borderColor: isActive ? "var(--color-accent)" : "var(--color-border-light)",
+            background: "var(--color-bg-card-front)",
             overflow: "hidden",
           }}
         >
-          {/* Full-bleed photo */}
-          <Image
-            src={lens.image}
-            alt={lens.name}
-            fill
-            className="object-cover object-center"
-            sizes="380px"
-          />
+          {/* Full-bleed photo (hide if missing) */}
+          {!imageError && (
+            <Image
+              src={lens.image}
+              alt={lens.name}
+              fill
+              className="object-cover object-center"
+              sizes="380px"
+              onError={() => setImageError(true)}
+            />
+          )}
+          {imageError && (
+            <div
+              aria-hidden
+              className="absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(120% 90% at 50% 35%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 45%, rgba(0,0,0,0.10) 100%)",
+              }}
+            />
+          )}
 
           {/* Gradient overlay — bottom two-thirds */}
           <div
             style={{
               position: "absolute",
               inset: 0,
-              background: "linear-gradient(to top, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.55) 45%, transparent 75%)",
+              background:
+                "linear-gradient(to top, rgba(var(--color-overlay-gradient-rgb),0.92) 0%, rgba(var(--color-overlay-gradient-rgb),0.55) 45%, transparent 75%)",
               borderRadius: 12,
             }}
           />
@@ -176,7 +209,7 @@ function FlipCard({ lens, isActive, wiggleDelay }: { lens: LensCard; isActive: b
               left: 0,
               right: 0,
               height: 3,
-              background: lens.accentBar,
+              background: theme === "dark" ? lens.accentBar : lens.accentBarLight,
               borderRadius: "12px 12px 0 0",
             }}
           />
@@ -221,12 +254,42 @@ function FlipCard({ lens, isActive, wiggleDelay }: { lens: LensCard; isActive: b
                 {lens.features.length} features
               </p>
               <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                <p className="font-body" style={{ fontSize: "0.65rem", letterSpacing: "0.15em", color: "rgba(255,255,255,0.45)" }}>
-                  Tap to explore
-                </p>
-                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5">
-                  <path d="M2 7h10M7 2l5 5-5 5" />
-                </svg>
+                <div
+                  className="font-body"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    fontSize: "0.75rem",
+                    letterSpacing: "0.18em",
+                    color: "rgba(255,255,255,0.72)",
+                  }}
+                >
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: 22,
+                      padding: "0 10px",
+                      borderRadius: 999,
+                      border: "0.5px solid rgba(255,255,255,0.22)",
+                      background: "rgba(0,0,0,0.18)",
+                      fontSize: "0.65rem",
+                      letterSpacing: "0.22em",
+                      textTransform: "uppercase",
+                      color: "rgba(255,255,255,0.78)",
+                      flexShrink: 0,
+                    }}
+                  >
+                    Flip
+                  </span>
+                  <span className="hidden md:inline">Click to flip</span>
+                  <span className="md:hidden">Tap to flip</span>
+                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="rgba(255,255,255,0.72)" strokeWidth="1.5" aria-hidden>
+                    <path d="M2 7h10M7 2l5 5-5 5" />
+                  </svg>
+                </div>
               </div>
             </div>
           </div>
@@ -241,15 +304,21 @@ function FlipCard({ lens, isActive, wiggleDelay }: { lens: LensCard; isActive: b
             WebkitBackfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
             borderRadius: 12,
-            border: "0.5px solid #2A2A2A",
-            background: "#0A0A0A",
+            border: "0.5px solid var(--color-border-light)",
+            background: "var(--color-bg-elevated)",
             display: "flex",
             flexDirection: "column",
             overflow: "hidden",
           }}
         >
           {/* Subtle top bar matching tier */}
-          <div style={{ height: 3, background: lens.accentBar, borderRadius: "12px 12px 0 0" }} />
+          <div
+            style={{
+              height: 3,
+              background: theme === "dark" ? lens.accentBar : lens.accentBarLight,
+              borderRadius: "12px 12px 0 0",
+            }}
+          />
 
           <div style={{ padding: "22px 26px 20px", display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
             {/* Back header */}
@@ -260,7 +329,7 @@ function FlipCard({ lens, isActive, wiggleDelay }: { lens: LensCard; isActive: b
                   fontFamily: "var(--font-display)",
                   fontWeight: 300,
                   fontSize: "1.1rem",
-                  color: "#FFFFFF",
+                  color: "var(--color-text-primary)",
                   letterSpacing: "-0.01em",
                 }}
               >
@@ -271,7 +340,7 @@ function FlipCard({ lens, isActive, wiggleDelay }: { lens: LensCard; isActive: b
                 height="14"
                 viewBox="0 0 14 14"
                 fill="none"
-                stroke="#666666"
+                stroke="var(--color-text-muted)"
                 strokeWidth="1.5"
                 style={{ flexShrink: 0 }}
               >
@@ -280,7 +349,7 @@ function FlipCard({ lens, isActive, wiggleDelay }: { lens: LensCard; isActive: b
             </div>
 
             {/* Divider */}
-            <div style={{ height: "0.5px", background: "#2E2E2E", marginBottom: 16 }} />
+            <div style={{ height: "0.5px", background: "var(--color-divider)", marginBottom: 16 }} />
 
             {/* Features list */}
             <ul style={{ display: "flex", flexDirection: "column", gap: 10, flex: 1, overflowY: "auto" }}>
@@ -291,7 +360,7 @@ function FlipCard({ lens, isActive, wiggleDelay }: { lens: LensCard; isActive: b
                     height="14"
                     viewBox="0 0 14 14"
                     fill="none"
-                    stroke="#888888"
+                    stroke="var(--color-feature-check)"
                     strokeWidth="1.5"
                     style={{ flexShrink: 0, marginTop: 2 }}
                   >
@@ -299,7 +368,7 @@ function FlipCard({ lens, isActive, wiggleDelay }: { lens: LensCard; isActive: b
                   </svg>
                   <span
                     className="font-body"
-                    style={{ fontSize: "0.78rem", color: "#CCCCCC", lineHeight: 1.65 }}
+                    style={{ fontSize: "0.85rem", color: "var(--color-text-primary)", lineHeight: 1.7 }}
                   >
                     {feature.label}
                   </span>
@@ -309,14 +378,14 @@ function FlipCard({ lens, isActive, wiggleDelay }: { lens: LensCard; isActive: b
 
             {/* Footnotes */}
             {lens.features.some((f) => f.footnote) && (
-              <div style={{ marginTop: 12, paddingTop: 10, borderTop: "0.5px solid #2A2A2A" }}>
+              <div style={{ marginTop: 12, paddingTop: 10, borderTop: "0.5px solid var(--color-border-light)" }}>
                 {lens.features
                   .filter((f) => f.footnote)
                   .map((f) => (
                     <p
                       key={f.footnote}
                       className="font-body"
-                      style={{ fontSize: "0.65rem", color: "#AAAAAA", lineHeight: 1.6 }}
+                      style={{ fontSize: "0.7rem", color: "var(--color-text-secondary)", lineHeight: 1.65 }}
                     >
                       {f.footnote}
                     </p>
@@ -333,6 +402,7 @@ function FlipCard({ lens, isActive, wiggleDelay }: { lens: LensCard; isActive: b
 export function CollectionsLensSection() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const touchStartX = useRef<number>(0);
 
   const scrollTo = useCallback((index: number) => {
     if (!scrollRef.current) return;
@@ -353,15 +423,18 @@ export function CollectionsLensSection() {
   return (
     <section
       id="elaris-series"
-      className="py-24 md:py-32 bg-[#0E0E0E]"
+      className="py-24 md:py-32 bg-background-secondary"
       aria-label="Elaris Series"
     >
       <Container className="relative z-10">
+        <div aria-live="polite" className="sr-only">
+          {LENS_SERIES[activeIndex]?.name} — card {activeIndex + 1} of {LENS_SERIES.length}
+        </div>
         {/* Header row */}
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <h2
-              className="font-display font-light text-[#E8E8E8] tracking-tight"
+              className="font-display font-light text-foreground tracking-tight"
               style={{
                 fontFamily: "var(--font-display)",
                 fontWeight: 300,
@@ -370,9 +443,9 @@ export function CollectionsLensSection() {
             >
               Elaris Series
             </h2>
-            <p className="mt-4 max-w-xl text-[#999999] font-body text-[0.95rem] leading-relaxed">
+            <p className="mt-4 max-w-xl text-foreground-secondary font-body text-[0.95rem] leading-relaxed">
               Four tiers of precision optics — each building on the last.{" "}
-              <span className="text-[#555555]">Tap a card to explore its features.</span>
+              <span className="text-foreground-muted">Tap a card to explore its features.</span>
             </p>
           </div>
 
@@ -381,8 +454,8 @@ export function CollectionsLensSection() {
             <button
               onClick={() => scrollTo(Math.max(0, activeIndex - 1))}
               disabled={activeIndex === 0}
-              className="flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-200 hover:bg-[#E8E8E8] hover:border-[#E8E8E8] hover:text-[#111111] disabled:opacity-25 disabled:pointer-events-none"
-              style={{ borderColor: "#333333", color: "#E8E8E8" }}
+              className="flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-200 hover:bg-accent hover:border-accent hover:text-[var(--color-text-on-accent)] disabled:pointer-events-none disabled:opacity-25"
+              style={{ border: "0.5px solid var(--color-border-light)", color: "var(--color-text-primary)" }}
               aria-label="Previous"
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -392,8 +465,8 @@ export function CollectionsLensSection() {
             <button
               onClick={() => scrollTo(Math.min(LENS_SERIES.length - 1, activeIndex + 1))}
               disabled={activeIndex === LENS_SERIES.length - 1}
-              className="flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-200 hover:bg-[#E8E8E8] hover:border-[#E8E8E8] hover:text-[#111111] disabled:opacity-25 disabled:pointer-events-none"
-              style={{ borderColor: "#333333", color: "#E8E8E8" }}
+              className="flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-200 hover:bg-accent hover:border-accent hover:text-[var(--color-text-on-accent)] disabled:pointer-events-none disabled:opacity-25"
+              style={{ border: "0.5px solid var(--color-border-light)", color: "var(--color-text-primary)" }}
               aria-label="Next"
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -407,6 +480,32 @@ export function CollectionsLensSection() {
         <div
           ref={scrollRef}
           onScroll={handleScroll}
+          role="region"
+          aria-label="Elaris lens series"
+          tabIndex={0}
+          onTouchStart={(e) => {
+            touchStartX.current = e.touches[0]?.clientX ?? 0;
+          }}
+          onTouchEnd={(e) => {
+            const endX = e.changedTouches[0]?.clientX ?? 0;
+            const diff = touchStartX.current - endX;
+            if (Math.abs(diff) <= 50) return;
+            if (diff > 0) {
+              scrollTo(Math.min(LENS_SERIES.length - 1, activeIndex + 1));
+            } else {
+              scrollTo(Math.max(0, activeIndex - 1));
+            }
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowRight") {
+              e.preventDefault();
+              scrollTo(Math.min(LENS_SERIES.length - 1, activeIndex + 1));
+            }
+            if (e.key === "ArrowLeft") {
+              e.preventDefault();
+              scrollTo(Math.max(0, activeIndex - 1));
+            }
+          }}
           className="mt-10 flex gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2"
           style={{
             scrollbarWidth: "none",
@@ -428,7 +527,7 @@ export function CollectionsLensSection() {
               className="h-[3px] rounded-full transition-all duration-300"
               style={{
                 width: activeIndex === index ? 28 : 8,
-                backgroundColor: activeIndex === index ? "#E8E8E8" : "#444444",
+                backgroundColor: activeIndex === index ? "var(--color-dot-active)" : "var(--color-dot-inactive)",
               }}
               aria-label={`Go to ${lens.name}`}
             />

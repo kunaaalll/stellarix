@@ -15,7 +15,7 @@ export function PageTransition({ children }: PageTransitionProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className="min-h-screen bg-[#111111]"
+      className="min-h-screen bg-background"
     >
       {children}
     </motion.main>

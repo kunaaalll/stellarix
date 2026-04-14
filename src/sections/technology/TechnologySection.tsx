@@ -38,23 +38,24 @@ export function TechnologySection() {
   return (
     <section
       id="technology"
-      className="py-24 md:py-32 bg-[#161616]"
+      className="bg-background-elevated py-24 md:py-32"
       aria-label="Technology"
     >
       <Container>
         <h2
-          className="font-display font-light text-[#E8E8E8] tracking-tight mb-4"
+          className="font-display font-light text-foreground tracking-tight mb-4"
           style={{ fontFamily: "var(--font-display)", fontWeight: 300, fontSize: "clamp(2.5rem, 5vw, 4rem)" }}
         >
           Core Lens Technology
         </h2>
-        <p className="mb-12 max-w-2xl text-[#999999] font-body text-[0.95rem] leading-relaxed">
+        <p className="mb-12 max-w-2xl text-foreground-secondary font-body text-[0.95rem] leading-relaxed">
           Every Elaris lens is treated with ultra-premium multi-layer coatings that enhance performance, durability, and aesthetics.
         </p>
 
         {/* BLI+™ highlight */}
         <div
-          className="mb-8 rounded-[12px] border border-[#E8E8E8] bg-[#E8E8E8] p-8 text-[#111111]"
+          className="mb-8 rounded-[12px] p-8"
+          style={{ background: "var(--color-highlight-bg)", color: "var(--color-highlight-text)" }}
         >
           <div className="flex items-center gap-3 mb-3">
             <span className="inline-block rounded-[4px] bg-[#3B82F6] px-3 py-1 text-[0.7rem] font-body font-medium tracking-[0.2em]">
@@ -64,21 +65,21 @@ export function TechnologySection() {
               {BLI_PLUS.title}
             </h3>
           </div>
-          <p className="text-[0.95rem] font-body text-[#333333] leading-relaxed">
+          <p className="text-[0.95rem] font-body leading-relaxed" style={{ color: "var(--color-highlight-body)" }}>
             {BLI_PLUS.description}
           </p>
         </div>
 
         {/* Core properties grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
           {CORE_PROPERTIES.map((item) => (
             <div
               key={item.title}
-              className="border border-[#2A2A2A] bg-[#161616] p-8 transition-all duration-300 hover:border-[#333333] hover:bg-[#111111]"
+              className="border border-border bg-background-elevated p-8 transition-all duration-300 hover:border-border-medium hover:bg-background"
               style={{ borderWidth: "0.5px" }}
             >
               <svg
-                className="mb-4 h-8 w-8 text-[#E8E8E8]"
+                className="mb-4 h-8 w-8 text-foreground"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={1.2}
@@ -87,10 +88,10 @@ export function TechnologySection() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <h3 className="font-body text-base font-medium text-[#E8E8E8]">
+              <h3 className="font-body text-base font-medium text-foreground">
                 {item.title}
               </h3>
-              <p className="mt-2 text-[0.95rem] font-body text-[#999999] leading-relaxed">
+              <p className="mt-2 text-[0.95rem] font-body text-foreground-secondary leading-relaxed">
                 {item.description}
               </p>
             </div>

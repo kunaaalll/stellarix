@@ -5,6 +5,7 @@ import { useRef } from "react";
 import * as THREE from "three";
 import { GlassesModel } from "./GlassesModel";
 import { FloatingParticles } from "./FloatingParticles";
+import { useThemeColors } from "@/context/ThemeContext";
 
 const AUTO_ROTATE_SPEED = 0.22;
 const MOUSE_INFLUENCE = 0.28;
@@ -19,8 +20,10 @@ export function Scene() {
   const targetRotation = useRef({ x: 0, y: 0 });
   const currentRotation = useRef({ x: 0, y: 0 });
   const autoY = useRef(0);
+  const colors = useThemeColors();
 
-  const { pointer } = useThree();
+  const { pointer, size } = useThree();
+  const modelScale = size.width < 640 ? 0.60 : size.width < 1024 ? 0.85 : 1;
 
   useFrame((_, delta) => {
     if (!groupRef.current) return;
@@ -41,17 +44,17 @@ export function Scene() {
   return (
     <>
       {/* Balanced lighting for dark theme — specs visible against dark background */}
-      <ambientLight intensity={0.6} color="#BBBBBB" />
+      <ambientLight intensity={colors.ambientLight.intensity} color={colors.ambientLight.color} />
       <directionalLight
         position={[3, 4, 5]}
-        intensity={1.3}
-        color="#E8E8E8"
+        intensity={colors.keyLight.intensity}
+        color={colors.keyLight.color}
         castShadow
         shadow-mapSize={[512, 512]}
       />
-      <directionalLight position={[-2, 2, 3]} intensity={0.5} color="#AAAAAA" />
-      <directionalLight position={[0, -1, 2]} intensity={0.3} color="#999999" />
-      <group ref={groupRef} position={[0, 0, 0]}>
+      <directionalLight position={[-2, 2, 3]} intensity={colors.fillLight1.intensity} color={colors.fillLight1.color} />
+      <directionalLight position={[0, -1, 2]} intensity={colors.fillLight2.intensity} color={colors.fillLight2.color} />
+      <group ref={groupRef} position={[0, 0, 0]} scale={modelScale}>
         <GlassesModel />
       </group>
       <FloatingParticles />

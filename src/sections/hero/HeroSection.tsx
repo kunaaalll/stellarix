@@ -18,7 +18,7 @@ function SceneFallback() {
   return null;
 }
 
-const DEFER_HEAVY_MS = 5500;
+const DEFER_HEAVY_MS = 2000;
 
 export function HeroSection() {
   const [mounted, setMounted] = useState(false);
@@ -80,30 +80,47 @@ export function HeroSection() {
             opacity={0.20}
           />
         )}
+        {/* Subtle glow behind 3D glasses to create contrast on dark background */}
         <div
           className="pointer-events-none absolute inset-0 z-[1]"
           style={{
             background:
-              "radial-gradient(ellipse 80% 70% at 50% 50%, rgba(17,17,17,0.85) 0%, rgba(17,17,17,0.4) 70%, transparent 100%)",
+              "radial-gradient(ellipse 45% 40% at 50% 38%, rgba(80,80,80,0.18) 0%, rgba(40,40,40,0.10) 50%, transparent 100%)",
+          }}
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute inset-0 z-[1]"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 70% at 50% 50%, rgba(17,17,17,0.75) 0%, rgba(17,17,17,0.3) 70%, transparent 100%)",
           }}
           aria-hidden
         />
       </div>
       {/* 3D canvas deferred until after idle to improve LCP/TBT and reduce unused JS on initial load */}
-      {showScene && (
-        <Canvas
-          camera={{ position: [0, 0, 4], fov: 45 }}
-          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-          onCreated={({ gl }) => {
-            gl.setClearColor(0x000000, 0);
-          }}
-          className="absolute inset-0 z-0 h-full w-full"
-        >
-          <Suspense fallback={<SceneFallback />}>
-            <SceneLazy />
-          </Suspense>
-        </Canvas>
-      )}
+      <div
+        className={[
+          "absolute inset-0 z-0 h-full w-full transition-opacity duration-1000",
+          showScene ? "opacity-100" : "opacity-0",
+        ].join(" ")}
+        aria-hidden={!showScene}
+      >
+        {showScene && (
+          <Canvas
+            camera={{ position: [0, 0, 4], fov: 45 }}
+            gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+            onCreated={({ gl }) => {
+              gl.setClearColor(0x000000, 0);
+            }}
+            className="absolute inset-0 h-full w-full"
+          >
+            <Suspense fallback={<SceneFallback />}>
+              <SceneLazy />
+            </Suspense>
+          </Canvas>
+        )}
+      </div>
       <div className="relative z-10 flex flex-col items-center gap-6 px-6 text-center">
         <p
           className="text-[0.7rem] font-body font-medium tracking-[0.4em] text-[#AAAAAA]"
@@ -131,13 +148,13 @@ export function HeroSection() {
         <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
           <a
             href="#elaris-series"
-            className="inline-block rounded-[4px] bg-[#E8E8E8] px-6 py-3 text-[0.8rem] font-medium tracking-[0.18em] text-[#111111] transition-colors duration-300 hover:bg-[#D0D0D0] focus:outline-none focus:ring-2 focus:ring-[#E8E8E8] focus:ring-offset-2 focus:ring-offset-[#111111]"
+            className="inline-flex min-h-11 items-center justify-center rounded-[4px] bg-[#E8E8E8] px-7 py-3.5 text-sm font-medium tracking-[0.18em] text-[#111111] transition-colors duration-300 hover:bg-[#D0D0D0] focus:outline-none focus:ring-2 focus:ring-[#E8E8E8] focus:ring-offset-2 focus:ring-offset-[#111111]"
           >
             Elaris Series
           </a>
           <a
             href="#technology"
-            className="inline-block rounded-[4px] border border-[#333333] px-6 py-3 text-[0.8rem] font-medium tracking-[0.18em] text-[#AAAAAA] transition-colors duration-300 hover:border-[#E8E8E8] focus:outline-none focus:ring-2 focus:ring-[#E8E8E8] focus:ring-offset-2"
+            className="inline-flex min-h-11 items-center justify-center rounded-[4px] border border-[#333333] px-7 py-3.5 text-sm font-medium tracking-[0.18em] text-[#CFCFCF] transition-colors duration-300 hover:border-[#E8E8E8] focus:outline-none focus:ring-2 focus:ring-[#E8E8E8] focus:ring-offset-2 focus:ring-offset-[#111111]"
           >
             Technology
           </a>

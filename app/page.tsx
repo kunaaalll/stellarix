@@ -4,7 +4,7 @@ import { HeroSection } from "@/sections/hero";
 import { CollectionsLensSection } from "@/sections/products";
 
 const sectionLoading = () => (
-  <section className="min-h-[50vh] bg-[#111111]" aria-hidden />
+  <section className="min-h-[50vh] bg-background" aria-hidden />
 );
 
 const TechnologySection = dynamic(

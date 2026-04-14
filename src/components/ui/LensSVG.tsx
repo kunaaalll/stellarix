@@ -1,9 +1,6 @@
 "use client";
 
-const RIM_STROKE = "#E8E8E8";
-const INNER_RINGS = "#AAAAAA";
-const GLASS_FILL = "rgba(160,180,200,0.06)";
-const CROSSHAIR = "#555555";
+import { useThemeColors } from "@/context/ThemeContext";
 
 interface LensSVGProps {
   className?: string;
@@ -15,6 +12,13 @@ interface LensSVGProps {
  * crosshairs (#555555), frosted glass fill, mount screws, temple stubs.
  */
 export function LensSVG({ className = "", size = 400 }: LensSVGProps) {
+  const colors = useThemeColors();
+
+  const RIM_STROKE = colors.rimStroke;
+  const INNER_RINGS = colors.innerRings;
+  const GLASS_FILL = colors.glassFill;
+  const CROSSHAIR = colors.crosshair;
+
   return (
     <svg
       viewBox="0 0 100 100"

@@ -4,19 +4,21 @@
  * Geometric eyeglass frame: two rims, bridge, two arms.
  * Light theme: charcoal frame #2A2A2A, cool grey-blue lens, grey accents.
  */
+import { useThemeColors } from "@/context/ThemeContext";
+
 const RIM_RADIUS = 0.8;
 const RIM_TUBE = 0.035;
 const BRIDGE_WIDTH = 0.32;
 const ARM_LENGTH = 0.64;
 const LENS_OFFSET = RIM_RADIUS * 0.5 + BRIDGE_WIDTH / 2;
 
-const FRAME_COLOR = "#2a2a2a";
-const ACCENT_COLOR = "#888888";
-const LENS_COLOR = "#aabbcc";
-
 export function GlassesModel() {
+  const colors = useThemeColors();
+  const FRAME_COLOR = colors.frameColor;
+  const ACCENT_COLOR = colors.accentColor;
+
   return (
-    <group rotation={[0, 0, 0]} position={[0, 0, 0]} scale={1.2}>
+    <group rotation={[0, 0, 0]} position={[0, 0, 0]} scale={0.95}>
       {/* Left lens rim */}
       <mesh position={[-LENS_OFFSET, 0, 0]}>
         <torusGeometry args={[RIM_RADIUS / 2, RIM_TUBE, 20, 36]} />

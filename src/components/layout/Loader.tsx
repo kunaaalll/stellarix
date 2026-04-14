@@ -25,7 +25,7 @@ export function Loader() {
     <AnimatePresence mode="wait">
       {visible && (
         <motion.div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-[#111111]"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-background"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: FADE_OUT_MS / 1000, ease: "easeInOut" }}
@@ -34,8 +34,8 @@ export function Loader() {
         >
           {/* Scanning line — transform-only to avoid CLS */}
           <motion.div
-            className="absolute left-0 right-0 h-[3px] w-full bg-[#E8E8E8]"
-            style={{ willChange: "transform", boxShadow: "0 0 20px rgba(232,232,232,0.3)" }}
+            className="absolute left-0 right-0 h-[3px] w-full bg-accent"
+            style={{ willChange: "transform", boxShadow: "0 0 20px rgba(var(--color-bg-primary-rgb),0.3)" }}
             initial={{ y: 0 }}
             animate={{ y: "100vh" }}
             transition={{

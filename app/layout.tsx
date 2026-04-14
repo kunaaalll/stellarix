@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Rajdhani } from "next/font/google";
 import "@/styles/globals.css";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-display",
@@ -21,7 +22,10 @@ const siteUrl = "https://stellarix.com";
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#111111",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FAFAFA" },
+    { media: "(prefers-color-scheme: dark)", color: "#111111" },
+  ],
 };
 
 export const metadata: Metadata = {
@@ -76,6 +80,12 @@ export default function RootLayout({
           Skip to main content
         </a>
         <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var t=localStorage.getItem('stellarix-theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})();",
+          }}
+        />
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
@@ -98,7 +108,7 @@ export default function RootLayout({
             }),
           }}
         />
-        {children}
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
