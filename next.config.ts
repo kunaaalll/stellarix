@@ -1,15 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Static export for GoDaddy shared hosting (Apache/cPanel)
-  output: "export",
-  trailingSlash: true,
-
   transpilePackages: ["three"],
 
   images: {
-    // Required for static export — Next.js image optimisation is server-side only
-    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
