@@ -9,11 +9,6 @@ const SceneLazy = dynamic(
   { ssr: false }
 );
 
-const RippleGridLazy = dynamic(
-  () => import("@/components/ui").then((m) => ({ default: m.RippleGrid })),
-  { ssr: false }
-);
-
 function SceneFallback() {
   return null;
 }
@@ -23,7 +18,6 @@ const DEFER_HEAVY_MS = 2000;
 export function HeroSection() {
   const [mounted, setMounted] = useState(false);
   const [allowHeavy, setAllowHeavy] = useState(false);
-  const [showRipple, setShowRipple] = useState(false);
   const [showScene, setShowScene] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -55,7 +49,6 @@ export function HeroSection() {
   useEffect(() => {
     if (!allowHeavy) return;
     const id = window.setTimeout(() => {
-      setShowRipple(true);
       setShowScene(true);
     }, 100);
     return () => window.clearTimeout(id);
@@ -63,23 +56,12 @@ export function HeroSection() {
 
   return (
     <section
-      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#111111] pt-16"
+      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden pt-16"
+      style={{ backgroundColor: "var(--color-bg-primary)" }}
       aria-label="Hero"
     >
-      {/* Reserve space for canvas to avoid CLS; background layers deferred to reduce main-thread work */}
+      {/* Background layers deferred to reduce main-thread work */}
       <div className="absolute inset-0 z-0 overflow-hidden" aria-hidden>
-        {showRipple && (
-          <RippleGridLazy
-            enableRainbow={false}
-            gridColor="#666666"
-            rippleIntensity={0.01}
-            gridSize={15}
-            gridThickness={30}
-            mouseInteraction={true}
-            mouseInteractionRadius={1.2}
-            opacity={0.20}
-          />
-        )}
         {/* Subtle glow behind 3D glasses to create contrast on dark background */}
         <div
           className="pointer-events-none absolute inset-0 z-[1]"
@@ -121,15 +103,18 @@ export function HeroSection() {
           </Canvas>
         )}
       </div>
-      <div className="relative z-10 flex flex-col items-center gap-6 px-6 text-center">
+      <div
+        className="relative z-10 flex flex-col items-center gap-6 px-6 text-center"
+        style={{ textShadow: "0 2px 16px rgba(0,0,0,0.45), 0 1px 4px rgba(0,0,0,0.3)" }}
+      >
         <p
-          className="text-[0.7rem] font-body font-medium tracking-[0.4em] text-[#AAAAAA]"
-          style={{ letterSpacing: "0.4em", textShadow: "0 1px 2px rgba(0,0,0,0.06)" }}
+          className="text-[0.7rem] font-body font-medium tracking-[0.4em] text-[#E8E8E8]"
+          style={{ letterSpacing: "0.4em" }}
         >
           Precision Optics
         </p>
         <h1
-          className="font-display font-light text-[#E8E8E8] tracking-tight"
+          className="font-display font-light text-white tracking-tight"
           style={{
             fontFamily: "var(--font-display)",
             fontWeight: 300,
@@ -137,11 +122,11 @@ export function HeroSection() {
             lineHeight: 1.1,
           }}
         >
-          <span className="italic text-[#AAAAAA]">/</span>Elaris
+          <span className="italic text-[#CCCCCC]">/</span>Elaris
         </h1>
         <p
-          className="max-w-md text-[0.95rem] font-medium leading-relaxed text-[#AAAAAA] md:text-base"
-          style={{ fontFamily: "var(--font-body)", lineHeight: 1.8, textShadow: "0 1px 2px rgba(0,0,0,0.06)" }}
+          className="max-w-md text-[0.95rem] font-medium leading-relaxed text-[#D0D0D0] md:text-base"
+          style={{ fontFamily: "var(--font-body)", lineHeight: 1.8 }}
         >
           Refined vision, perfected through 60 years of optical mastery.
         </p>
@@ -149,12 +134,13 @@ export function HeroSection() {
           <a
             href="#elaris-series"
             className="inline-flex min-h-11 items-center justify-center rounded-[4px] bg-[#E8E8E8] px-7 py-3.5 text-sm font-medium tracking-[0.18em] text-[#111111] transition-colors duration-300 hover:bg-[#D0D0D0] focus:outline-none focus:ring-2 focus:ring-[#E8E8E8] focus:ring-offset-2 focus:ring-offset-[#111111]"
+            style={{ textShadow: "none" }}
           >
             Elaris Series
           </a>
           <a
             href="#technology"
-            className="inline-flex min-h-11 items-center justify-center rounded-[4px] border border-[#333333] px-7 py-3.5 text-sm font-medium tracking-[0.18em] text-[#CFCFCF] transition-colors duration-300 hover:border-[#E8E8E8] focus:outline-none focus:ring-2 focus:ring-[#E8E8E8] focus:ring-offset-2 focus:ring-offset-[#111111]"
+            className="inline-flex min-h-11 items-center justify-center rounded-[4px] border border-[#555555] px-7 py-3.5 text-sm font-medium tracking-[0.18em] text-[#D0D0D0] transition-colors duration-300 hover:border-[#E8E8E8] focus:outline-none focus:ring-2 focus:ring-[#E8E8E8] focus:ring-offset-2 focus:ring-offset-[#111111]"
           >
             Technology
           </a>
